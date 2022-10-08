@@ -23,7 +23,11 @@ public class InitialAllocateOperation implements Operation {
 
     public static InitialAllocateOperation getInstance() {
         if (initialAllocateOperation == null) {
-            initialAllocateOperation = new InitialAllocateOperation();
+            synchronized (InitialAllocateOperation.class) {
+                if (initialAllocateOperation == null) {
+                    initialAllocateOperation = new InitialAllocateOperation();
+                }
+            }
         }
         return initialAllocateOperation;
     }
