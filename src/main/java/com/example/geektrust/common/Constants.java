@@ -2,7 +2,9 @@ package com.example.geektrust.common;
 
 public class Constants {
     public static final String SPACE_REGEX = " ";
-    public static final String MONTH_JAUNARY = "JANUARY";
+    public static final String MONTH_JANUARY = "JANUARY";
+    public static final String MONTH_JUNE = "JANUARY";
+    public static final String MONTH_DECEMBER = "JANUARY";
 
     // Exceptions String
     public static final String COMMAND_NOT_FOUND = "command not found";
@@ -17,4 +19,6 @@ public class Constants {
     public static final String CHANGE = "CHANGE";
     public static final String BALANCE = "BALANCE";
     public static final String REBALANCE = "REBALANCE";
+
+    public static final String OUTPUT_CANNOT_REBALANCE = "CANNOT_REBALANCE";
 }

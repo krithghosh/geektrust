@@ -3,12 +3,16 @@ package com.example.geektrust.helper;
 
 import com.example.geektrust.common.Utils;
 import com.example.geektrust.model.Allocate;
+import com.example.geektrust.model.Portfolio;
 import com.example.geektrust.service.InitialInvestment;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
+
+import static com.example.geektrust.common.Constants.MONTH_DECEMBER;
+import static com.example.geektrust.common.Constants.MONTH_JUNE;
+import static com.example.geektrust.common.Constants.OUTPUT_CANNOT_REBALANCE;
 
 public class RebalanceOperation implements Operation {
 
@@ -25,43 +29,47 @@ public class RebalanceOperation implements Operation {
 
     public static RebalanceOperation getInstance(InitialInvestment initialInvestment) {
         if (rebalanceOperation == null) {
-            rebalanceOperation = new RebalanceOperation(initialInvestment);
+            synchronized (RebalanceOperation.class) {
+                if (rebalanceOperation == null) {
+                    rebalanceOperation = new RebalanceOperation(initialInvestment);
+                }
+            }
         }
         return rebalanceOperation;
     }
 
     @Override
-    public List<Integer> processRequest(TreeMap<Integer, LinkedList<Allocate>> transactions, LinkedList<String> input) throws Exception {
-        int size = transactions.size();
+    public List<Integer> processRequest(Portfolio portfolio, LinkedList<String> input) throws Exception {
+        int size = portfolio.getTransactions().size();
 
         if (size < 6) {
-            System.out.println("CANNOT_REBALANCE");
+            System.out.println(OUTPUT_CANNOT_REBALANCE);
             return null;
         }
 
-        if (size >= 12 && transactions.get(Utils.getMonth("DECEMBER")).size() == 3) {
-            System.out.println(transactions.get(Utils.getMonth("DECEMBER")).getLast().toString());
+        if (size >= 12 && portfolio.getTransactions().get(Utils.getMonth(MONTH_DECEMBER)).size() == 3) {
+            System.out.println(portfolio.getTransactions().get(Utils.getMonth(MONTH_DECEMBER)).getLast().toString());
             return null;
         }
 
-        if (transactions.get(Utils.getMonth("JUNE")).size() == 3) {
-            System.out.println(transactions.get(Utils.getMonth("JUNE")).getLast().toString());
+        if (portfolio.getTransactions().get(Utils.getMonth(MONTH_JUNE)).size() == 3) {
+            System.out.println(portfolio.getTransactions().get(Utils.getMonth(MONTH_JUNE)).getLast().toString());
             return null;
         }
 
-        LinkedList<Integer> fundsAllocated = transactions.lastEntry().getValue().getLast().getFundsValue();
+        LinkedList<Integer> fundsAllocated = portfolio.getTransactions().lastEntry().getValue().getLast().getFundsValue();
         int sum = fundsAllocated.stream().mapToInt(Integer::intValue).sum();
         return initialInvestment.getInitialAllocationPercent().stream().map(x -> (int) Math.floor(x * sum)).collect(Collectors.toList());
     }
 
     @Override
-    public void processAllocation(TreeMap<Integer, LinkedList<Allocate>> transactions, String month, List<Integer> amount) {
+    public void processAllocation(Portfolio portfolio, String month, List<Integer> amount) {
         if (amount == null) return;
 
-        LinkedList<Allocate> allocations = transactions.lastEntry().getValue();
+        LinkedList<Allocate> allocations = portfolio.getTransactions().lastEntry().getValue();
         Allocate allocate = new Allocate(amount);
         allocations.add(allocate);
-        transactions.put(Utils.getMonth(month), allocations);
+        portfolio.getTransactions().put(Utils.getMonth(month), allocations);
         System.out.println(allocate.toString());
     }
 }

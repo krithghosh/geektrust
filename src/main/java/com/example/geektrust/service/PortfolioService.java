@@ -48,31 +48,30 @@ public class PortfolioService {
         try {
             switch (inputType) {
                 case ALLOCATE:
-                    fundAllocation = InitialAllocateOperation.getInstance().processRequest(portfolio.getTransactions(), inputs);
+                    fundAllocation = InitialAllocateOperation.getInstance().processRequest(portfolio, inputs);
                     portfolio.setInitialInvestment(fundAllocation);
                     break;
 
                 case SIP:
-                    fundAllocation = SystematicInvestmentOperation.getInstance().processRequest(portfolio.getTransactions(), inputs);
+                    fundAllocation = SystematicInvestmentOperation.getInstance().processRequest(portfolio, inputs);
                     portfolio.setSystematicInvestment(fundAllocation);
                     break;
 
                 case CHANGE:
                     if (Utils.getMonth(inputs.getLast()) > 0) {
-                        SystematicInvestmentOperation.getInstance().processAllocation(portfolio.getTransactions(),
-                                inputs.getLast(), portfolio.getSystematicInvestment().getFundsValue());
+                        SystematicInvestmentOperation.getInstance().processAllocation(portfolio, inputs.getLast(), portfolio.getSystematicInvestment().getFundsValue());
                     }
-                    fundAllocation = ChangeOperation.getInstance().processRequest(portfolio.getTransactions(), inputs);
-                    ChangeOperation.getInstance().processAllocation(portfolio.getTransactions(), inputs.getLast(), fundAllocation);
+                    fundAllocation = ChangeOperation.getInstance().processRequest(portfolio, inputs);
+                    ChangeOperation.getInstance().processAllocation(portfolio, inputs.getLast(), fundAllocation);
                     break;
 
                 case REBALANCE:
-                    fundAllocation = RebalanceOperation.getInstance(portfolio.getInitialInvestment()).processRequest(portfolio.getTransactions(), inputs);
-                    RebalanceOperation.getInstance(portfolio.getInitialInvestment()).processAllocation(portfolio.getTransactions(), null, fundAllocation);
+                    fundAllocation = RebalanceOperation.getInstance(portfolio.getInitialInvestment()).processRequest(portfolio, inputs);
+                    RebalanceOperation.getInstance(portfolio.getInitialInvestment()).processAllocation(portfolio, null, fundAllocation);
                     break;
 
                 case BALANCE:
-                    BalanceOperation.getInstance().processRequest(portfolio.getTransactions(), inputs);
+                    BalanceOperation.getInstance().processRequest(portfolio, inputs);
                     break;
 
                 default:
