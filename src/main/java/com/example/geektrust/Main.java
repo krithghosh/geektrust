@@ -3,8 +3,6 @@ package com.example.geektrust;
 import com.example.geektrust.model.Portfolio;
 import com.example.geektrust.service.PortfolioService;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,10 +10,8 @@ public class Main {
     private static final Logger logger = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) {
-        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        for (String arg : args) {
-            executorService.submit(() -> processInputFile(arg));
-        }
+        processInputFile(args[0]);
+        System.exit(0);
     }
 
     private static void processInputFile(String filePath) {
